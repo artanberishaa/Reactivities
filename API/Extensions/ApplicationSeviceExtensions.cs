@@ -16,7 +16,8 @@ namespace API.Extensions
 {
     public static class ApplicationSeviceExtensions
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services,
+         IConfiguration config)
         {
              
             services.AddSwaggerGen(c =>

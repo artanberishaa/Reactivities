@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Application.Activities;
-using MediatR;
+
 
 namespace API.Controllers
 {
