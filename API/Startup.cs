@@ -2,6 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Extensions;
+using Application.Activities;
+using Application.Core;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -21,7 +25,7 @@ namespace API
         private readonly IConfiguration _config;
         public Startup(IConfiguration config)
         {
-            this._config = config;
+           _config = config;
            
         }
 
@@ -31,16 +35,21 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
-            });
-            services.AddDbContext<DataContext>(opt =>
+           services.AddControllers();
+           services.AddApplicationServices(_config);
 
-        {
-              opt.UseSqlite(_config.GetConnectionString("DefaultConnection"));
-        });
+           services.AddDbContext<DataContext>(opt =>
+           {
+               opt.UseSqlite(_config.GetConnectionString("DefaultConnection"));
+           });
+           services.AddCors(opt =>
+           {
+                opt.AddPolicy("CorsPolicy" , policy =>
+           {
+               policy.AllowAnyMethod().AllowAnyHeader().WithOrigins("htttp://localhost:3000");
+           });
+           
+           });
         }
   
 
@@ -54,16 +63,23 @@ namespace API
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "API v1"));
             }
 
-            app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseCors("CorsPolicy");
 
+            app.UseAuthorization();
+        
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-            });
+
+            });      
+           
+            }
+
+            };
         }
-    }
-}
+    
+
